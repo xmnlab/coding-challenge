@@ -1,0 +1,9 @@
+name: coding-challenge
+channels:
+  - nodefaults
+  - conda-forge
+dependencies:
+  - compilers
+  - compiler-rt
+  - clangdev 13.*
+  - clangxx 13.*
