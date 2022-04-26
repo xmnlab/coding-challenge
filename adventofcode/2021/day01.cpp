@@ -133,42 +133,102 @@ auto read_file(std::string filename) -> std::vector<int> {
   return numbers;
 }
 
-auto part1(std::vector<int> sea_floor_depth) -> void {
-  int previous_value = -1;
+auto part1(std::vector<int> sea_floor_depth) -> int {
+  int previous_value = 9999999;
   int counter = 0;
 
   for (auto item : sea_floor_depth) {
-    if (previous_value != -1) {
-      counter += previous_value < item ? 1 : 0;
-    }
+    counter += previous_value < item ? 1 : 0;
     previous_value = item;
-    std::cout << item << ' ';
   }
-  std::cout << "\n";
-  std::cout << "Increased: " << counter << std::endl;
+  return counter;
 }
 
-auto part2(std::vector<int> sea_floor_depth) -> void {
-  int previous_value = -1;
-  int counter = 0;
-  int counter_window = 0;
-  int n_windows = 26;
-  int windows[n_windows];
+auto part2(std::vector<int> sea_floor_depth) -> int {
+  int increased = 0;
+
+  int const window_size = 3;
+  const int n_measures = 8;
+  const int offset = n_measures;
+
+  int values[n_measures] = {0};
+  std::vector<int> pre_results(n_measures);
+  std::vector<int> results;
+
+  bool measures_complete = false;
+  int offsets[] = {0, -1, -2, -3, -4, -5, -6, -7};
 
   for (auto item : sea_floor_depth) {
-    counter += 1;
+    std::cout << std::endl << item << " ";
 
-    std::cout << item << ' ';
+    for (int i = 0; i < n_measures; i++) {
+      if (offsets[i] >= 0 && offsets[i] <= window_size) {
+        values[i] += item;
+        std::cout << i << " ";
+      } else {
+        std::cout << "  ";
+      }
+
+      offsets[i]++;
+
+      if (offsets[i] == window_size) {
+        offsets[i] = - offset +1;
+
+        pre_results[i] = values[i];
+        values[i] = 0;
+
+        if (i == n_measures - 1) {
+          measures_complete = true;
+        }
+      }
+    }
+
+    if (measures_complete) {
+      for (int i = 0; i < n_measures; i++) {
+        results.push_back(pre_results[i]);
+        pre_results[i] = 0;
+      }
+      measures_complete = false;
+    }
   }
-  std::cout << "\n";
-  std::cout << "Increased: " << counter << std::endl;
+
+  /*
+  // show results
+  std::cout << std::endl << "results" << std::endl;
+  for (int item : results) {
+
+    std::cout << std::endl << item;
+  }
+  */
+  return part1(results);
 }
 
 auto main(int argc, const char *argv[]) -> int {
   std::string filename = "adventofcode/2021/input/day01.txt";
+  std::vector<int> test_data{199, 200, 208, 210, 200, 207, 240, 269, 260, 263};
   std::vector<int> sea_floor_depth = read_file(filename);
+  int result;
 
-  part1(sea_floor_depth);
-  part2(sea_floor_depth);
+  std::cout << std::endl << "test data" << std::endl;
+
+  result = part1(test_data);
+  std::cout << std::endl;
+  std::cout << "[PART1] Increased: " << result << std::endl;
+
+  result = part2(test_data);
+  std::cout << "[PART2] Increased: " << result << std::endl;
+
+  // exit(0);
+
+  std::cout << std::endl << "input data" << std::endl;
+
+  /*result = part1(sea_floor_depth);
+  std::cout << std::endl;
+  std::cout << "[PART1] Increased: " << result << std::endl;
+  */
+
+  result = part2(sea_floor_depth);
+  std::cout << std::endl << "[PART2] Increased: " << result << std::endl;
+
   return 0;
 }
