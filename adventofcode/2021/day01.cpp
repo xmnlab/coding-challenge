@@ -13,14 +13,14 @@ that indicates the antenna's signal strength by displaying 0-50 stars.
 Your instincts tell you that in order to save Christmas, you'll need to get all
 fifty stars by December 25th.
 
-Collect stars by solving puzzles. Two puzzles will be made available on each day
-in the Advent calendar; the second puzzle is unlocked when you complete the
+Collect stars by solving puzzles. Two puzzles will be made available on each
+day in the Advent calendar; the second puzzle is unlocked when you complete the
 first. Each puzzle grants one star. Good luck!
 
-As the submarine drops below the surface of the ocean, it automatically performs
-a sonar sweep of the nearby sea floor. On a small screen, the sonar sweep report
-(your puzzle input) appears: each line is a measurement of the sea floor depth
-as the sweep looks further and further away from the submarine.
+As the submarine drops below the surface of the ocean, it automatically
+performs a sonar sweep of the nearby sea floor. On a small screen, the sonar
+sweep report (your puzzle input) appears: each line is a measurement of the sea
+floor depth as the sweep looks further and further away from the submarine.
 
 For example, suppose you had the following report:
 
@@ -109,7 +109,7 @@ than the previous sum?
 
 */
 
-#include <algorithm> // for std::copy
+#include <algorithm>  // for std::copy
 #include <fstream>
 #include <iostream>
 #include <iterator>
@@ -125,8 +125,7 @@ auto read_file(std::string filename) -> std::vector<int> {
 
   while (std::getline(fin, str)) {
     // Line contains string of length > 0 then save it in vector
-    if (str.size() > 0)
-      numbers.push_back(std::stoi(str));
+    if (str.size() > 0) numbers.push_back(std::stoi(str));
   }
 
   fin.close();
@@ -145,65 +144,22 @@ auto part1(std::vector<int> sea_floor_depth) -> int {
 }
 
 auto part2(std::vector<int> sea_floor_depth) -> int {
-  int increased = 0;
-
   int const window_size = 3;
-  const int n_measures = 8;
-  const int offset = n_measures;
 
-  int values[n_measures] = {0};
-  std::vector<int> pre_results(n_measures);
   std::vector<int> results;
+  int n_total = sea_floor_depth.size();
 
-  bool measures_complete = false;
-  int offsets[] = {0, -1, -2, -3, -4, -5, -6, -7};
-
-  for (auto item : sea_floor_depth) {
-    std::cout << std::endl << item << " ";
-
-    for (int i = 0; i < n_measures; i++) {
-      if (offsets[i] >= 0 && offsets[i] <= window_size) {
-        values[i] += item;
-        std::cout << i << " ";
-      } else {
-        std::cout << "  ";
-      }
-
-      offsets[i]++;
-
-      if (offsets[i] == window_size) {
-        offsets[i] = - offset +1;
-
-        pre_results[i] = values[i];
-        values[i] = 0;
-
-        if (i == n_measures - 1) {
-          measures_complete = true;
-        }
-      }
-    }
-
-    if (measures_complete) {
-      for (int i = 0; i < n_measures; i++) {
-        results.push_back(pre_results[i]);
-        pre_results[i] = 0;
-      }
-      measures_complete = false;
-    }
+  for (int i = 0; i < n_total; ++i) {
+    if (i + window_size - 1 < n_total)
+      results.push_back(
+          sea_floor_depth[i] + sea_floor_depth[i + 1] +
+          sea_floor_depth[i + 2]);
   }
 
-  /*
-  // show results
-  std::cout << std::endl << "results" << std::endl;
-  for (int item : results) {
-
-    std::cout << std::endl << item;
-  }
-  */
   return part1(results);
 }
 
-auto main(int argc, const char *argv[]) -> int {
+auto main(int argc, const char* argv[]) -> int {
   std::string filename = "adventofcode/2021/input/day01.txt";
   std::vector<int> test_data{199, 200, 208, 210, 200, 207, 240, 269, 260, 263};
   std::vector<int> sea_floor_depth = read_file(filename);
@@ -218,14 +174,11 @@ auto main(int argc, const char *argv[]) -> int {
   result = part2(test_data);
   std::cout << "[PART2] Increased: " << result << std::endl;
 
-  // exit(0);
-
   std::cout << std::endl << "input data" << std::endl;
 
-  /*result = part1(sea_floor_depth);
+  result = part1(sea_floor_depth);
   std::cout << std::endl;
   std::cout << "[PART1] Increased: " << result << std::endl;
-  */
 
   result = part2(sea_floor_depth);
   std::cout << std::endl << "[PART2] Increased: " << result << std::endl;
